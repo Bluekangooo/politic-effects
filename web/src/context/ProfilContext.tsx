@@ -7,7 +7,13 @@ import {
   type ReactNode,
 } from "react";
 import type { Nutzerprofil } from "@domain/fragebogen";
-import { ermittleZielgruppen, zielgruppenNamen } from "@engine/zielgruppen";
+import {
+  ermittleEinkommensklasse,
+  ermittleZielgruppen,
+  istProfilVollstaendig,
+  zielgruppenNamen,
+} from "@engine/zielgruppen";
+import { berechneSteuerprofil, type SteuerprofilErgebnis } from "@engine/steuerlast";
 import { useKatalog } from "./KatalogContext";
 
 const STORAGE_KEY = "politic-effects-profil";
@@ -17,7 +23,9 @@ interface ProfilContextValue {
   zielgruppenIds: string[];
   zielgruppenLabels: { id: string; name: string }[];
   profilVollstaendig: boolean;
-  setAntwort: (frageId: string, wert: string | number | boolean) => void;
+  einkommensklasse: ReturnType<typeof ermittleEinkommensklasse> | null;
+  steuerprofil: SteuerprofilErgebnis | null;
+  setAntwort: (frageId: string, wert: number) => void;
   speichereProfil: () => void;
   loescheProfil: () => void;
 }
@@ -39,8 +47,6 @@ function ladeProfil(): Nutzerprofil {
   return { ...LEERES_PROFIL };
 }
 
-const PFLICHT_FRAGEN = ["basis-beschaeftigung", "basis-jahreseinkommen", "soli-kapitalertraege"];
-
 export function ProfilProvider({ children }: { children: ReactNode }) {
   const { katalog } = useKatalog();
   const [profil, setProfil] = useState<Nutzerprofil>(ladeProfil);
@@ -55,12 +61,20 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     [katalog, zielgruppenIds],
   );
 
-  const profilVollstaendig = useMemo(() => {
+  const profilVollstaendig = useMemo(() => istProfilVollstaendig(profil), [profil]);
+
+  const einkommensklasse = useMemo(() => {
     const alle = { ...profil.basisAntworten, ...profil.vorhabenAntworten };
-    return PFLICHT_FRAGEN.every((id) => alle[id] !== undefined && alle[id] !== "");
+    if (typeof alle["basis-einkommen-angestellt"] !== "number") return null;
+    return ermittleEinkommensklasse(profil);
   }, [profil]);
 
-  const setAntwort = useCallback((frageId: string, wert: string | number | boolean) => {
+  const steuerprofil = useMemo(() => {
+    if (!profilVollstaendig && !hatBasisEingaben(profil)) return null;
+    return berechneSteuerprofil(profil, katalog.gesellschaft);
+  }, [profil, profilVollstaendig, katalog.gesellschaft]);
+
+  const setAntwort = useCallback((frageId: string, wert: number) => {
     setProfil((prev) => ({
       ...prev,
       basisAntworten: { ...prev.basisAntworten, [frageId]: wert },
@@ -83,6 +97,8 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
         zielgruppenIds,
         zielgruppenLabels,
         profilVollstaendig,
+        einkommensklasse,
+        steuerprofil,
         setAntwort,
         speichereProfil,
         loescheProfil,
@@ -90,6 +106,14 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     >
       {children}
     </ProfilContext.Provider>
+  );
+}
+
+function hatBasisEingaben(profil: Nutzerprofil): boolean {
+  const alle = { ...profil.basisAntworten, ...profil.vorhabenAntworten };
+  return (
+    typeof alle["basis-einkommen-angestellt"] === "number" ||
+    typeof alle["basis-einkommen-selbststaendig"] === "number"
   );
 }
 

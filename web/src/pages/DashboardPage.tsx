@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ZEITHORIZONTE, STANDARD_ZEITHORIZONTE } from "@domain/zeithorizont";
 import type { Zeithorizont } from "@domain/zeithorizont";
 import type { Vorhaben } from "@domain/vorhaben";
 import {
   berechneDashboardEffekte,
+  berechneGesamtStaatsumlegung,
   berechneGesellschaftsEffekt,
   defaultAuswahl,
   type DashboardState,
@@ -12,6 +13,18 @@ import { useKatalog } from "../context/KatalogContext";
 import { useProfil } from "../context/ProfilContext";
 import { Geldbetrag, formatPersonenanzahl } from "../components/Geldbetrag";
 import { formatEuroGesellschaft, formatEuroVoll } from "../lib/format";
+
+const STAATSUMLEGUNG_KEY = "politic-effects-staatsumlegung";
+
+function ladeStaatsumlegungAktiv(): boolean {
+  try {
+    const raw = localStorage.getItem(STAATSUMLEGUNG_KEY);
+    if (raw === null) return true;
+    return raw === "true";
+  } catch {
+    return true;
+  }
+}
 
 function VorhabenBaum({
   vorhaben,
@@ -116,9 +129,14 @@ export function DashboardPage() {
   const { katalog } = useKatalog();
   const { profil, zielgruppenLabels } = useProfil();
   const [zeithorizont, setZeithorizont] = useState<Zeithorizont>("kurz");
+  const [staatsumlegungAktiv, setStaatsumlegungAktiv] = useState(ladeStaatsumlegungAktiv);
   const [state, setState] = useState<DashboardState>(() =>
     defaultAuswahl(katalog.vorhaben),
   );
+
+  useEffect(() => {
+    localStorage.setItem(STAATSUMLEGUNG_KEY, String(staatsumlegungAktiv));
+  }, [staatsumlegungAktiv]);
 
   const effekte = useMemo(
     () =>
@@ -145,6 +163,19 @@ export function DashboardPage() {
     const p = e!.persoenlich.find((x) => x.zeithorizont === zeithorizont);
     return sum + (p?.wert ?? 0);
   }, 0);
+
+  const staatsumlegung = useMemo(() => {
+    if (!staatsumlegungAktiv || !katalog.gesellschaft) return null;
+    return berechneGesamtStaatsumlegung(
+      profil,
+      katalog.vorhaben,
+      state.ausgewaehlteVorhaben,
+      katalog.gesellschaft,
+      zeithorizont,
+    );
+  }, [staatsumlegungAktiv, katalog, profil, state.ausgewaehlteVorhaben, zeithorizont]);
+
+  const nettoInklStaat = persoenlichGesamt + (staatsumlegung?.umlegung ?? 0);
 
   const toggleVorhaben = (id: string) => {
     setState((prev) => {
@@ -206,6 +237,17 @@ export function DashboardPage() {
             onToggleVorhaben={toggleVorhaben}
             onToggleUntervorhaben={toggleUntervorhaben}
           />
+          <label className="staatsumlegung-toggle">
+            <input
+              type="checkbox"
+              checked={staatsumlegungAktiv}
+              onChange={(e) => setStaatsumlegungAktiv(e.target.checked)}
+            />
+            <span>Effekte auf den Staatshaushalt umlegen</span>
+          </label>
+          <p className="staatsumlegung-hinweis">
+            Ihr Anteil am Fiskaleffekt wird proportional zur geschätzten Steuerlast berechnet.
+          </p>
         </aside>
 
         <section className="effekte-panel">
@@ -213,7 +255,7 @@ export function DashboardPage() {
             <h2>Gesamteffekt (Auswahl)</h2>
             <div className="effekt-grid">
               <div className="effekt-spalte persoenlich">
-                <h4>Auf mich</h4>
+                <h4>Auf mich (direkt)</h4>
                 <Geldbetrag
                   wert={persoenlichGesamt}
                   modus="persoenlich"
@@ -237,6 +279,31 @@ export function DashboardPage() {
                 </div>
               )}
             </div>
+
+            {staatsumlegungAktiv && staatsumlegung && (
+              <div className="staatsumlegung-zeilen">
+                <div className="staatsumlegung-zeile">
+                  <span className="staatsumlegung-label">Staatsumlegung</span>
+                  <Geldbetrag
+                    wert={staatsumlegung.umlegung}
+                    modus="persoenlich"
+                    className={staatsumlegung.umlegung < 0 ? "negativ" : "neutral"}
+                  />
+                  <span className="effekt-meta">
+                    Anteil: {staatsumlegung.steueranteilProzent.toFixed(4)} % der Steuereinnahmen
+                  </span>
+                </div>
+                <div className="staatsumlegung-zeile netto">
+                  <span className="staatsumlegung-label">Netto inkl. Staatshaushalt</span>
+                  <Geldbetrag
+                    wert={nettoInklStaat}
+                    modus="persoenlich"
+                    gross
+                    className={nettoInklStaat > 0 ? "positiv" : nettoInklStaat < 0 ? "negativ" : "neutral"}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {effekte.map((e) => (

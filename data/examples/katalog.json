@@ -1,0 +1,265 @@
+{
+  "version": "0.1.0",
+  "zielgruppen": [
+    {
+      "id": "pendler",
+      "name": "Pendler",
+      "beschreibung": "Personen mit regelmäßigem Arbeitsweg"
+    },
+    {
+      "id": "rentner",
+      "name": "Rentner",
+      "beschreibung": "Personen im Ruhestand"
+    },
+    {
+      "id": "mieter",
+      "name": "Mieter",
+      "beschreibung": "Personen in Mietwohnungen"
+    },
+    {
+      "id": "eigentuemer",
+      "name": "Eigentümer",
+      "beschreibung": "Personen in selbstgenutztem Wohneigentum"
+    },
+    {
+      "id": "unternehmer",
+      "name": "Unternehmer",
+      "beschreibung": "Selbstständige und Unternehmensinhaber"
+    }
+  ],
+  "fragen": [
+    {
+      "id": "basis-alter",
+      "text": "Wie alt sind Sie?",
+      "typ": "number",
+      "zielgruppenMapping": {
+        "65": ["rentner"]
+      }
+    },
+    {
+      "id": "basis-wohnsituation",
+      "text": "Wie wohnen Sie?",
+      "typ": "single-choice",
+      "optionen": [
+        { "value": "miete", "label": "Mietwohnung" },
+        { "value": "eigentum", "label": "Eigentumswohnung/Haus" }
+      ],
+      "zielgruppenMapping": {
+        "miete": ["mieter"],
+        "eigentum": ["eigentuemer"]
+      }
+    },
+    {
+      "id": "pendler-strecke",
+      "text": "Fahren Sie täglich mehr als 20 km zur Arbeit?",
+      "typ": "boolean",
+      "zielgruppenMapping": {
+        "true": ["pendler"],
+        "false": []
+      },
+      "kontextIds": ["mobilitaetsreform", "pendlerpauschale-abschaffung"]
+    },
+    {
+      "id": "selbststaendig",
+      "text": "Sind Sie selbstständig oder Unternehmensinhaber?",
+      "typ": "boolean",
+      "zielgruppenMapping": {
+        "true": ["unternehmer"],
+        "false": []
+      },
+      "kontextIds": ["steuerreform-kmu"]
+    }
+  ],
+  "vorhaben": [
+    {
+      "id": "mindestlohn-erhoehung",
+      "titel": "Mindestlohnerhöhung auf 14 €",
+      "beschreibung": "Anhebung des gesetzlichen Mindestlohns – wirkt direkt auf Einkommensschwache ohne Untervorhaben.",
+      "metadata": {
+        "status": "entwurf",
+        "erstelltAm": "2026-01-15"
+      },
+      "zielgruppen": [
+        {
+          "zielgruppeId": "mieter",
+          "fragenIds": ["basis-wohnsituation"],
+          "rechenvorschrift": {
+            "variablen": {
+              "einkommen": {
+                "beschreibung": "Monatliches Nettoeinkommen in EUR",
+                "quelle": "nutzerprofil"
+              },
+              "miete": {
+                "beschreibung": "Monatliche Kaltmiete in EUR",
+                "quelle": "nutzerprofil"
+              }
+            },
+            "formeln": {
+              "kurz": "Math.min(200, einkommen * 0.02)",
+              "mittel": "Math.min(400, einkommen * 0.04)",
+              "lang": "Math.min(600, einkommen * 0.06)"
+            },
+            "einheit": "EUR/Jahr",
+            "erlaeuterung": "Geschätzte Entlastung durch höheres verfügbares Einkommen"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mobilitaetsreform",
+      "titel": "Mobilitätsreform 2026",
+      "beschreibung": "Paket aus CO₂-Preiserhöhung und Pendlerpauschalen-Anpassung.",
+      "metadata": {
+        "status": "modelliert",
+        "erstelltAm": "2026-02-01"
+      },
+      "untervorhaben": [
+        {
+          "id": "co2-preis-erhoehung",
+          "titel": "CO₂-Preis auf 55 €/t erhöhen",
+          "beschreibung": "Erhöhung des CO₂-Preises auf fossilen Kraftstoffen.",
+          "zielgruppen": [
+            {
+              "zielgruppeId": "pendler",
+              "fragenIds": ["pendler-strecke"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "pendelstrecke_km": {
+                    "beschreibung": "Tägliche Pendelstrecke in km (einfache Strecke)",
+                    "quelle": "nutzerprofil",
+                    "standardwert": 30
+                  },
+                  "arbeitstage": {
+                    "beschreibung": "Arbeitstage pro Jahr",
+                    "quelle": "konstante",
+                    "standardwert": 220
+                  }
+                },
+                "formeln": {
+                  "kurz": "pendelstrecke_km * arbeitstage * 0.08 * 2",
+                  "mittel": "pendelstrecke_km * arbeitstage * 0.12 * 2",
+                  "lang": "pendelstrecke_km * arbeitstage * 0.15 * 2"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Mehrkosten durch höheren CO₂-Preis auf Pendelstrecke"
+              }
+            }
+          ]
+        },
+        {
+          "id": "pendlerpauschale-abschaffung",
+          "titel": "Pendlerpauschale abschaffen",
+          "beschreibung": "Wegfall der steuerlichen Pendlerpauschale ab 21. km.",
+          "zielgruppen": [
+            {
+              "zielgruppeId": "pendler",
+              "fragenIds": ["pendler-strecke"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "pendelstrecke_km": {
+                    "beschreibung": "Tägliche Pendelstrecke in km (einfache Strecke)",
+                    "quelle": "nutzerprofil",
+                    "standardwert": 30
+                  },
+                  "grenzsteuersatz": {
+                    "beschreibung": "Grenzsteuersatz in Dezimal (z. B. 0.35)",
+                    "quelle": "nutzerprofil",
+                    "standardwert": 0.35
+                  },
+                  "arbeitstage": {
+                    "beschreibung": "Arbeitstage pro Jahr",
+                    "quelle": "konstante",
+                    "standardwert": 220
+                  }
+                },
+                "formeln": {
+                  "kurz": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2",
+                  "mittel": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2",
+                  "lang": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Steuerliche Mehrbelastung durch Wegfall der Pendlerpauschale (negativer Wert = Belastung)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "steuerreform-kmu",
+      "titel": "Steuerreform für KMU",
+      "beschreibung": "Kombiniert direkte Unternehmer-Effekte mit Untervorhaben für Mieter/Eigentümer.",
+      "metadata": {
+        "status": "entwurf",
+        "erstelltAm": "2026-03-01"
+      },
+      "zielgruppen": [
+        {
+          "zielgruppeId": "unternehmer",
+          "fragenIds": ["selbststaendig"],
+          "rechenvorschrift": {
+            "variablen": {
+              "gewinn": {
+                "beschreibung": "Jährlicher Unternehmensgewinn in EUR",
+                "quelle": "nutzerprofil"
+              }
+            },
+            "formeln": {
+              "kurz": "gewinn * 0.01",
+              "mittel": "gewinn * 0.02",
+              "lang": "gewinn * 0.03"
+            },
+            "einheit": "EUR/Jahr",
+            "erlaeuterung": "Entlastung durch reduzierten Körperschaftsteuersatz"
+          }
+        }
+      ],
+      "untervorhaben": [
+        {
+          "id": "wohnungsbaufoerderung",
+          "titel": "Förderung neuer Mietwohnungen",
+          "zielgruppen": [
+            {
+              "zielgruppeId": "mieter",
+              "fragenIds": ["basis-wohnsituation"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "miete": {
+                    "beschreibung": "Monatliche Kaltmiete in EUR",
+                    "quelle": "nutzerprofil"
+                  }
+                },
+                "formeln": {
+                  "kurz": "0",
+                  "mittel": "miete * 12 * -0.02",
+                  "lang": "miete * 12 * -0.05"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Mietpreisdämpfung durch erhöhtes Angebot (negativ = Entlastung)"
+              }
+            },
+            {
+              "zielgruppeId": "eigentuemer",
+              "fragenIds": ["basis-wohnsituation"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "immobilienwert": {
+                    "beschreibung": "Geschätzter Immobilienwert in EUR",
+                    "quelle": "nutzerprofil"
+                  }
+                },
+                "formeln": {
+                  "kurz": "0",
+                  "mittel": "immobilienwert * -0.005",
+                  "lang": "immobilienwert * -0.01"
+                },
+                "einheit": "EUR",
+                "erlaeuterung": "Leichter Wertverlust durch erhöhtes Mietangebot"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

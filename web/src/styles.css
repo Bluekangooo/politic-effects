@@ -1,0 +1,506 @@
+:root {
+  --bg: #f4f1ec;
+  --surface: #ffffff;
+  --surface-muted: #ebe6de;
+  --text: #1c1a17;
+  --text-muted: #5c574f;
+  --accent: #1a5c4b;
+  --accent-light: #e3f0ec;
+  --accent-hover: #134539;
+  --border: #d8d2c8;
+  --positive: #1a6b3c;
+  --positive-bg: #e8f5ee;
+  --shadow: 0 2px 12px rgba(28, 26, 23, 0.06);
+  --radius: 10px;
+  --font: "DM Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.brand-mark {
+  background: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  font-family: var(--mono);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.link-btn:hover {
+  color: var(--accent);
+}
+
+.app-main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Start */
+.start-page {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.hero h1 {
+  font-size: 2.25rem;
+  line-height: 1.2;
+  margin: 0.5rem 0 1rem;
+  max-width: 680px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+}
+
+.lead {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 620px;
+  margin: 0;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.demo-hinweis {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+.demo-hinweis h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.workflow-steps {
+  margin: 1rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+}
+
+.workflow-steps li {
+  margin-bottom: 0.35rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+/* Page headers */
+.page-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.page-header p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Fragebogen */
+.fragebogen-form {
+  margin-top: 2rem;
+  max-width: 640px;
+}
+
+.fragen-block h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.frage-field {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  background: var(--surface);
+}
+
+.frage-field legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.choice-row,
+.choice-col {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.choice-col {
+  flex-direction: column;
+}
+
+.choice-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--bg);
+}
+
+.choice-chip.wide {
+  width: 100%;
+}
+
+.choice-chip:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.number-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.number-input {
+  font: inherit;
+  font-family: var(--mono);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 180px;
+}
+
+.input-suffix {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.zielgruppen-preview {
+  background: var(--accent-light);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.zielgruppen-preview h2 {
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.zielgruppen-preview ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.fehler {
+  color: #b42318;
+  margin: 1rem 0;
+}
+
+/* Dashboard */
+.zielgruppen-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.zielgruppen-bar .label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+.zeithorizont-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  flex: 1;
+  max-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.tab.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.tab-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.sidebar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  position: sticky;
+  top: 4.5rem;
+}
+
+.sidebar h2 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.vorhaben-tree,
+.untervorhaben-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vorhaben-tree > li {
+  margin-bottom: 1rem;
+}
+
+.untervorhaben-list {
+  margin: 0.5rem 0 0 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+}
+
+.tree-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.node-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0 1.5rem;
+}
+
+.effekte-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gesamt-karte,
+.effekt-karte {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.gesamt-karte h2,
+.effekt-karte h3 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.effekt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.effekt-spalte h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.effekt-wert {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.effekt-wert.gross {
+  font-size: 2rem;
+}
+
+.effekt-wert.positiv {
+  color: var(--positive);
+}
+
+.effekt-wert.neutral {
+  color: var(--text-muted);
+}
+
+.effekt-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+.effekt-meta.fiskal {
+  color: #9a3412;
+}
+
+.vorhaben-effekte .effekt-karte {
+  margin-left: 0;
+}
+
+.vorhaben-effekte .effekt-karte h3 {
+  font-size: 0.95rem;
+}
+
+.leer-hinweis {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/untervorhaben.json",
+  "title": "Untervorhaben",
+  "type": "object",
+  "required": ["id", "titel", "zielgruppen"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "titel": { "type": "string", "minLength": 1 },
+    "beschreibung": { "type": "string" },
+    "zielgruppen": {
+      "type": "array",
+      "items": { "$ref": "zielgruppen-zuordnung.json" },
+      "minItems": 1
+    }
+  }
+}

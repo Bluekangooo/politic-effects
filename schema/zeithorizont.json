@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/zeithorizont.json",
+  "title": "Zeithorizont",
+  "type": "string",
+  "enum": ["kurz", "mittel", "lang"]
+}

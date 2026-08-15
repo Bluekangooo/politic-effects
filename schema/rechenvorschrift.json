@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/rechenvorschrift.json",
+  "title": "Rechenvorschrift",
+  "type": "object",
+  "required": ["variablen", "formeln", "einheit"],
+  "additionalProperties": false,
+  "properties": {
+    "variablen": {
+      "type": "object",
+      "additionalProperties": { "$ref": "variablen-definition.json" }
+    },
+    "formeln": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kurz": { "type": "string", "minLength": 1 },
+        "mittel": { "type": "string", "minLength": 1 },
+        "lang": { "type": "string", "minLength": 1 }
+      },
+      "minProperties": 1
+    },
+    "einheit": { "type": "string", "minLength": 1 },
+    "erlaeuterung": { "type": "string" }
+  }
+}

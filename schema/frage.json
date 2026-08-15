@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/frage.json",
+  "title": "Frage",
+  "type": "object",
+  "required": ["id", "text", "typ", "zielgruppenMapping"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "text": { "type": "string", "minLength": 1 },
+    "typ": {
+      "type": "string",
+      "enum": ["boolean", "number", "single-choice", "multi-choice"]
+    },
+    "optionen": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["value", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "value": { "type": "string" },
+          "label": { "type": "string", "minLength": 1 }
+        }
+      },
+      "minItems": 1
+    },
+    "zielgruppenMapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
+      },
+      "minProperties": 1
+    },
+    "kontextIds": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "typ": { "enum": ["single-choice", "multi-choice"] } }
+      },
+      "then": { "required": ["optionen"] }
+    }
+  ]
+}

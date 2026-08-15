@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/vorhaben-katalog.json",
+  "title": "VorhabenKatalog",
+  "type": "object",
+  "required": ["version", "zielgruppen", "fragen", "vorhaben"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "zielgruppen": {
+      "type": "array",
+      "items": { "$ref": "zielgruppe.json" },
+      "minItems": 1
+    },
+    "fragen": {
+      "type": "array",
+      "items": { "$ref": "frage.json" }
+    },
+    "vorhaben": {
+      "type": "array",
+      "items": { "$ref": "vorhaben.json" },
+      "minItems": 1
+    }
+  }
+}

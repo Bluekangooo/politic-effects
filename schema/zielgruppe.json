@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/zielgruppe.json",
+  "title": "Zielgruppe",
+  "type": "object",
+  "required": ["id", "name"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Eindeutige Kennung in kebab-case"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "beschreibung": { "type": "string" }
+  }
+}

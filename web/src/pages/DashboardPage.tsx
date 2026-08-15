@@ -1,0 +1,266 @@
+import { useMemo, useState } from "react";
+import { ZEITHORIZONTE, STANDARD_ZEITHORIZONTE } from "@domain/zeithorizont";
+import type { Zeithorizont } from "@domain/zeithorizont";
+import type { Vorhaben } from "@domain/vorhaben";
+import {
+  berechneDashboardEffekte,
+  berechneGesellschaftsEffekt,
+  defaultAuswahl,
+  type DashboardState,
+} from "@engine/index";
+import { useKatalog } from "../context/KatalogContext";
+import { useProfil } from "../context/ProfilContext";
+
+function formatEuro(wert: number): string {
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(wert);
+}
+
+function formatZahl(wert: number): string {
+  return new Intl.NumberFormat("de-DE").format(Math.round(wert));
+}
+
+function VorhabenBaum({
+  vorhaben,
+  state,
+  onToggleVorhaben,
+  onToggleUntervorhaben,
+}: {
+  vorhaben: Vorhaben[];
+  state: DashboardState;
+  onToggleVorhaben: (id: string) => void;
+  onToggleUntervorhaben: (id: string) => void;
+}) {
+  return (
+    <ul className="vorhaben-tree">
+      {vorhaben.map((v) => (
+        <li key={v.id}>
+          <label className="tree-node vorhaben-node">
+            <input
+              type="checkbox"
+              checked={state.ausgewaehlteVorhaben.has(v.id)}
+              onChange={() => onToggleVorhaben(v.id)}
+            />
+            <span className="node-title">{v.titel}</span>
+          </label>
+          {v.beschreibung && <p className="node-desc">{v.beschreibung}</p>}
+          {(v.untervorhaben?.length ?? 0) > 0 && (
+            <ul className="untervorhaben-list">
+              {v.untervorhaben!.map((uv) => (
+                <li key={uv.id}>
+                  <label className="tree-node unter-node">
+                    <input
+                      type="checkbox"
+                      checked={state.ausgewaehlteUntervorhaben.has(uv.id)}
+                      disabled={!state.ausgewaehlteVorhaben.has(v.id)}
+                      onChange={() => onToggleUntervorhaben(uv.id)}
+                    />
+                    <span className="node-title">{uv.titel}</span>
+                  </label>
+                  {uv.beschreibung && <p className="node-desc">{uv.beschreibung}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function EffektTabelle({
+  titel,
+  persoenlich,
+  gesellschaft,
+  zeithorizont,
+}: {
+  titel: string;
+  persoenlich: { zeithorizont: Zeithorizont; wert: number; einheit: string }[];
+  gesellschaft?: Partial<
+    Record<Zeithorizont, { entlastungGesamt: number; fiskalausfall: number; betroffene: number }>
+  >;
+  zeithorizont: Zeithorizont;
+}) {
+  const pers = persoenlich.find((p) => p.zeithorizont === zeithorizont);
+  const ges = gesellschaft?.[zeithorizont];
+  const zhLabel = STANDARD_ZEITHORIZONTE[zeithorizont].label;
+
+  return (
+    <div className="effekt-karte">
+      <h3>{titel}</h3>
+      <div className="effekt-grid">
+        <div className="effekt-spalte persoenlich">
+          <h4>Auf mich</h4>
+          <p className={`effekt-wert ${(pers?.wert ?? 0) > 0 ? "positiv" : "neutral"}`}>
+            {pers ? formatEuro(pers.wert) : "–"}
+          </p>
+          <p className="effekt-meta">{pers?.einheit ?? "EUR/Jahr"} · {zhLabel}</p>
+        </div>
+        {ges && (
+          <div className="effekt-spalte gesellschaft">
+            <h4>Gesellschaft</h4>
+            <p className="effekt-wert positiv">{formatEuro(ges.entlastungGesamt)}</p>
+            <p className="effekt-meta">
+              Gesamtentlastung · {formatZahl(ges.betroffene)} Betroffene
+            </p>
+            <p className="effekt-meta fiskal">
+              Fiskalausfall: {formatEuro(ges.fiskalausfall)}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function DashboardPage() {
+  const { katalog } = useKatalog();
+  const { profil, zielgruppenLabels } = useProfil();
+  const [zeithorizont, setZeithorizont] = useState<Zeithorizont>("kurz");
+  const [state, setState] = useState<DashboardState>(() =>
+    defaultAuswahl(katalog.vorhaben),
+  );
+
+  const effekte = useMemo(
+    () =>
+      katalog.vorhaben
+        .map((v) =>
+          berechneDashboardEffekte(
+            v,
+            zielgruppenLabels.map((z) => z.id),
+            profil,
+            [...ZEITHORIZONTE],
+            katalog.gesellschaft,
+            state,
+          ),
+        )
+        .filter(Boolean),
+    [katalog, zielgruppenLabels, profil, state],
+  );
+
+  const gesellschaftGesamt = katalog.gesellschaft
+    ? berechneGesellschaftsEffekt(katalog.gesellschaft, zeithorizont)
+    : undefined;
+
+  const persoenlichGesamt = effekte.reduce((sum, e) => {
+    const p = e!.persoenlich.find((x) => x.zeithorizont === zeithorizont);
+    return sum + (p?.wert ?? 0);
+  }, 0);
+
+  const toggleVorhaben = (id: string) => {
+    setState((prev) => {
+      const next = new Set(prev.ausgewaehlteVorhaben);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return { ...prev, ausgewaehlteVorhaben: next };
+    });
+  };
+
+  const toggleUntervorhaben = (id: string) => {
+    setState((prev) => {
+      const next = new Set(prev.ausgewaehlteUntervorhaben);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return { ...prev, ausgewaehlteUntervorhaben: next };
+    });
+  };
+
+  return (
+    <div className="dashboard-page">
+      <div className="page-header">
+        <h1>Effekte-Dashboard</h1>
+        <p>Wählen Sie Vorhaben und Untervorhaben, um Auswirkungen zu vergleichen.</p>
+      </div>
+
+      <div className="zielgruppen-bar">
+        <span className="label">Ihre Zielgruppen:</span>
+        {zielgruppenLabels.map((zg) => (
+          <span key={zg.id} className="tag">
+            {zg.name}
+          </span>
+        ))}
+      </div>
+
+      <div className="zeithorizont-tabs">
+        {ZEITHORIZONTE.map((zh) => (
+          <button
+            key={zh}
+            type="button"
+            className={`tab ${zeithorizont === zh ? "active" : ""}`}
+            onClick={() => setZeithorizont(zh)}
+          >
+            {STANDARD_ZEITHORIZONTE[zh].label}
+            <span className="tab-sub">{STANDARD_ZEITHORIZONTE[zh].jahre} Jahre</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="dashboard-layout">
+        <aside className="sidebar">
+          <h2>Politische Vorhaben</h2>
+          <VorhabenBaum
+            vorhaben={katalog.vorhaben}
+            state={state}
+            onToggleVorhaben={toggleVorhaben}
+            onToggleUntervorhaben={toggleUntervorhaben}
+          />
+        </aside>
+
+        <section className="effekte-panel">
+          <div className="gesamt-karte">
+            <h2>Gesamteffekt (Auswahl)</h2>
+            <div className="effekt-grid">
+              <div className="effekt-spalte persoenlich">
+                <h4>Auf mich</h4>
+                <p className={`effekt-wert gross ${persoenlichGesamt > 0 ? "positiv" : "neutral"}`}>
+                  {formatEuro(persoenlichGesamt)}
+                </p>
+                <p className="effekt-meta">jährliche Entlastung (geschätzt)</p>
+              </div>
+              {gesellschaftGesamt && (
+                <div className="effekt-spalte gesellschaft">
+                  <h4>Gesellschaft</h4>
+                  <p className="effekt-wert gross positiv">
+                    {formatEuro(gesellschaftGesamt.entlastungGesamt)}
+                  </p>
+                  <p className="effekt-meta">
+                    {formatZahl(gesellschaftGesamt.betroffene)} Betroffene
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {effekte.map((e) => (
+            <div key={e!.id} className="vorhaben-effekte">
+              <EffektTabelle
+                titel={e!.titel}
+                persoenlich={e!.persoenlich}
+                gesellschaft={e!.gesellschaft}
+                zeithorizont={zeithorizont}
+              />
+              {e!.kinder?.map((kind) => (
+                <EffektTabelle
+                  key={kind.id}
+                  titel={`↳ ${kind.titel}`}
+                  persoenlich={kind.persoenlich}
+                  zeithorizont={zeithorizont}
+                />
+              ))}
+            </div>
+          ))}
+
+          {effekte.length === 0 && (
+            <p className="leer-hinweis">Bitte wählen Sie mindestens ein Vorhaben aus.</p>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}

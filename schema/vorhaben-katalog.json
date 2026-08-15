@@ -23,6 +23,26 @@
       "type": "array",
       "items": { "$ref": "vorhaben.json" },
       "minItems": 1
+    },
+    "gesellschaft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anzahl_soli_pflichtige",
+        "durchschnitt_entlastung_arbeit",
+        "anzahl_kapitalanleger_soli",
+        "durchschnitt_entlastung_kapital",
+        "gesamt_fiskalausfall_mrd",
+        "steueraufkommen_gesamt_mrd"
+      ],
+      "properties": {
+        "anzahl_soli_pflichtige": { "type": "number", "minimum": 0 },
+        "durchschnitt_entlastung_arbeit": { "type": "number" },
+        "anzahl_kapitalanleger_soli": { "type": "number", "minimum": 0 },
+        "durchschnitt_entlastung_kapital": { "type": "number" },
+        "gesamt_fiskalausfall_mrd": { "type": "number", "minimum": 0 },
+        "steueraufkommen_gesamt_mrd": { "type": "number", "minimum": 0 }
+      }
     }
   }
 }

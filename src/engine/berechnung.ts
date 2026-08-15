@@ -9,6 +9,7 @@ export interface GesellschaftDaten {
   anzahl_kapitalanleger_soli: number;
   durchschnitt_entlastung_kapital: number;
   gesamt_fiskalausfall_mrd: number;
+  steueraufkommen_gesamt_mrd: number;
 }
 
 /** Kontext für die Formelauswertung */
@@ -53,8 +54,10 @@ export function loeseVariablen(
 /** Mappt Rechenvorschrift-Variablennamen auf Fragebogen-Felder */
 function mapProfilKey(varName: string): string {
   const mapping: Record<string, string> = {
-    jahreseinkommen: "basis-jahreseinkommen",
-    kapitalertraege: "soli-kapitalertraege",
+    einkommen_angestellt: "basis-einkommen-angestellt",
+    einkommen_selbststaendig: "basis-einkommen-selbststaendig",
+    jahreseinkommen: "basis-einkommen-angestellt",
+    kapitalertraege: "basis-kapitalertraege",
   };
   return mapping[varName] ?? varName;
 }

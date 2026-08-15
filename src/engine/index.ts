@@ -9,9 +9,26 @@ export {
 
 export {
   ermittleZielgruppen,
+  ermittleEinkommensklasse,
   sammleAktiveFragen,
+  sammlePflichtFragen,
+  istProfilVollstaendig,
+  erzeugeKinderFragen,
   zielgruppenNamen,
 } from "./zielgruppen.js";
+
+export {
+  berechneSteuerprofil,
+  leseAntwort,
+  leseKinderAlter,
+  type SteuerprofilErgebnis,
+} from "./steuerlast.js";
+
+export {
+  berechneStaatsumlegung,
+  berechneGesamtStaatsumlegung,
+  type StaatsumlegungErgebnis,
+} from "./staatsumlegung.js";
 
 export {
   berechneDashboardEffekte,

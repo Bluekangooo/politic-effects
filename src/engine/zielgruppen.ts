@@ -1,102 +1,88 @@
 import type { Nutzerprofil } from "../types/fragebogen.js";
 import type { Frage } from "../types/fragebogen.js";
 import type { VorhabenKatalog } from "../types/vorhaben.js";
+import { leseAntwort } from "./steuerlast.js";
 
 const SOLI_FREIGRENZE = 73_000;
 const KAPITAL_SCHWELLE = 1_000;
 
-/**
- * Ermittelt Zielgruppen aus Fragebogen-Antworten.
- * Kombiniert einfaches Mapping mit schwellenwertbasierten Regeln.
- */
 export function ermittleZielgruppen(
-  katalog: VorhabenKatalog,
+  _katalog: VorhabenKatalog,
   profil: Nutzerprofil,
 ): string[] {
   const ids = new Set<string>();
-  const alleAntworten = { ...profil.basisAntworten, ...profil.vorhabenAntworten };
 
-  for (const frage of katalog.fragen) {
-    const antwort = alleAntworten[frage.id];
-    if (antwort === undefined) continue;
+  const einkommenAngestellt = leseAntwort(profil, "basis-einkommen-angestellt");
+  const einkommenSelbst = leseAntwort(profil, "basis-einkommen-selbststaendig");
+  const kapital = leseAntwort(profil, "basis-kapitalertraege");
 
-    const gemappt = mappeAntwortZuZielgruppen(frage, antwort);
-    for (const id of gemappt) {
-      ids.add(id);
-    }
+  if (einkommenAngestellt > SOLI_FREIGRENZE) {
+    ids.add("soli-pflichtig-arbeitnehmer");
   }
 
-  applySoliRegeln(alleAntworten, ids);
+  if (einkommenSelbst > SOLI_FREIGRENZE) {
+    ids.add("soli-pflichtig-selbststaendig");
+  }
 
-  if (ids.size === 0 || (ids.size === 1 && ids.has("nicht-betroffen"))) {
-    if (!hatSoliRelevanz(alleAntworten)) {
-      ids.clear();
-      ids.add("nicht-betroffen");
-    }
+  if (kapital > KAPITAL_SCHWELLE) {
+    ids.add("kapitalanleger-soli");
+  }
+
+  if (ids.size === 0) {
+    ids.add("nicht-betroffen");
   }
 
   return [...ids];
 }
 
-function mappeAntwortZuZielgruppen(
-  frage: Frage,
-  antwort: string | number | boolean | string[],
-): string[] {
-  const key = Array.isArray(antwort) ? antwort.join(",") : String(antwort);
-  return frage.zielgruppenMapping[key] ?? [];
+/** Erzeugt dynamische Kinder-Fragen basierend auf basis-kinder-anzahl */
+export function erzeugeKinderFragen(anzahl: number): Frage[] {
+  return Array.from({ length: anzahl }, (_, i) => ({
+    id: `kind-${i + 1}-alter`,
+    text: `Alter des ${i + 1}. Kindes`,
+    typ: "number" as const,
+    einheit: "Jahre",
+    hinweis: "Ganzzahl in Jahren",
+    dynamisch: true,
+  }));
 }
 
-function applySoliRegeln(
-  antworten: Record<string, string | number | boolean | string[]>,
-  ids: Set<string>,
-): void {
-  const einkommen = Number(antworten["basis-jahreseinkommen"]) || 0;
-  const beschaeftigung = String(antworten["basis-beschaeftigung"] ?? "");
-  const kapital = Number(antworten["soli-kapitalertraege"]) || 0;
-
-  if (beschaeftigung === "angestellt" && einkommen > SOLI_FREIGRENZE) {
-    ids.add("soli-pflichtig-arbeitnehmer");
-    ids.delete("nicht-betroffen");
-  }
-
-  if (beschaeftigung === "selbststaendig" && einkommen > SOLI_FREIGRENZE) {
-    ids.add("soli-pflichtig-selbststaendig");
-    ids.delete("nicht-betroffen");
-  }
-
-  if (kapital > KAPITAL_SCHWELLE) {
-    ids.add("kapitalanleger-soli");
-    ids.delete("nicht-betroffen");
-  }
-
-  if (
-    ids.size === 0 ||
-    (!ids.has("soli-pflichtig-arbeitnehmer") &&
-      !ids.has("soli-pflichtig-selbststaendig") &&
-      !ids.has("kapitalanleger-soli"))
-  ) {
-    if (beschaeftigung === "nicht-erwerbstaetig" || einkommen <= SOLI_FREIGRENZE) {
-      if (kapital <= KAPITAL_SCHWELLE) {
-        ids.add("nicht-betroffen");
-      }
-    }
-  }
+/** Alle Fragen inkl. dynamischer Kinder-Fragen */
+export function sammleAktiveFragen(
+  katalog: VorhabenKatalog,
+  profil: Nutzerprofil,
+): Frage[] {
+  const kinderAnzahl = leseAntwort(profil, "basis-kinder-anzahl");
+  return [...katalog.fragen, ...erzeugeKinderFragen(kinderAnzahl)];
 }
 
-function hatSoliRelevanz(
-  antworten: Record<string, string | number | boolean | string[]>,
-): boolean {
-  const einkommen = Number(antworten["basis-jahreseinkommen"]) || 0;
-  const kapital = Number(antworten["soli-kapitalertraege"]) || 0;
-  return einkommen > SOLI_FREIGRENZE || kapital > KAPITAL_SCHWELLE;
+/** Pflichtfragen-IDs für Validierung */
+export function sammlePflichtFragen(profil: Nutzerprofil): string[] {
+  const basis = [
+    "basis-alter",
+    "basis-erwachsene-steuerlich",
+    "basis-einkommen-angestellt",
+    "basis-einkommen-selbststaendig",
+    "basis-partner-einkommen",
+    "basis-kinder-anzahl",
+    "basis-kapitalertraege",
+    "basis-kirchensteuer",
+    "basis-steuerlast-gesamt",
+  ];
+
+  const kinderAnzahl = leseAntwort(profil, "basis-kinder-anzahl");
+  const kinder = Array.from({ length: kinderAnzahl }, (_, i) => `kind-${i + 1}-alter`);
+
+  return [...basis, ...kinder];
 }
 
-/** Gibt alle für den Katalog relevanten Fragen zurück (Basis + vorhabenspezifisch) */
-export function sammleAktiveFragen(katalog: VorhabenKatalog): Frage[] {
-  return katalog.fragen;
+export function istProfilVollstaendig(profil: Nutzerprofil): boolean {
+  const alle = { ...profil.basisAntworten, ...profil.vorhabenAntworten };
+  return sammlePflichtFragen(profil).every(
+    (id) => typeof alle[id] === "number" && Number.isFinite(alle[id]),
+  );
 }
 
-/** Findet Zielgruppen-Namen aus dem Katalog */
 export function zielgruppenNamen(
   katalog: VorhabenKatalog,
   ids: string[],
@@ -105,4 +91,18 @@ export function zielgruppenNamen(
     const zg = katalog.zielgruppen.find((z) => z.id === id);
     return { id, name: zg?.name ?? id };
   });
+}
+
+export function ermittleEinkommensklasse(
+  profil: Nutzerprofil,
+): "niedrig" | "mittel" | "hoch" | "sehr-hoch" {
+  const gesamt =
+    leseAntwort(profil, "basis-einkommen-angestellt") +
+    leseAntwort(profil, "basis-einkommen-selbststaendig") +
+    leseAntwort(profil, "basis-partner-einkommen");
+
+  if (gesamt <= 30_000) return "niedrig";
+  if (gesamt <= 60_000) return "mittel";
+  if (gesamt <= 100_000) return "hoch";
+  return "sehr-hoch";
 }

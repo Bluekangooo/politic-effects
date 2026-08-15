@@ -22,6 +22,21 @@
         "aktualisiertAm": { "type": "string", "format": "date" }
       }
     },
+    "staatsfinanzierung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fiskalausfall_feld", "richtung"],
+      "properties": {
+        "fiskalausfall_feld": {
+          "type": "string",
+          "enum": ["gesamt_fiskalausfall_mrd"]
+        },
+        "richtung": {
+          "type": "string",
+          "enum": ["belastung", "entlastung"]
+        }
+      }
+    },
     "zielgruppen": {
       "type": "array",
       "items": { "$ref": "zielgruppen-zuordnung.json" },

@@ -2,29 +2,24 @@
   "version": "0.1.0",
   "zielgruppen": [
     {
-      "id": "pendler",
-      "name": "Pendler",
-      "beschreibung": "Personen mit regelmäßigem Arbeitsweg"
+      "id": "soli-pflichtig-arbeitnehmer",
+      "name": "Soli-pflichtige Arbeitnehmer",
+      "beschreibung": "Angestellte mit Bruttoeinkommen über der Soli-Freigrenze (~73.000 €)"
     },
     {
-      "id": "rentner",
-      "name": "Rentner",
-      "beschreibung": "Personen im Ruhestand"
+      "id": "soli-pflichtig-selbststaendig",
+      "name": "Soli-pflichtige Selbstständige",
+      "beschreibung": "Selbstständige mit Einkommen über der Soli-Freigrenze"
     },
     {
-      "id": "mieter",
-      "name": "Mieter",
-      "beschreibung": "Personen in Mietwohnungen"
+      "id": "kapitalanleger-soli",
+      "name": "Kapitalanleger mit Soli",
+      "beschreibung": "Personen mit Kapitalerträgen, auf die der Solidaritätszuschlag erhoben wird"
     },
     {
-      "id": "eigentuemer",
-      "name": "Eigentümer",
-      "beschreibung": "Personen in selbstgenutztem Wohneigentum"
-    },
-    {
-      "id": "unternehmer",
-      "name": "Unternehmer",
-      "beschreibung": "Selbstständige und Unternehmensinhaber"
+      "id": "nicht-betroffen",
+      "name": "Nicht Soli-pflichtig",
+      "beschreibung": "Keine direkte Entlastung durch die Abschaffung"
     }
   ],
   "fragen": [
@@ -32,234 +27,206 @@
       "id": "basis-alter",
       "text": "Wie alt sind Sie?",
       "typ": "number",
-      "zielgruppenMapping": {
-        "65": ["rentner"]
-      }
+      "einheit": "Jahre",
+      "hinweis": "Ganzzahl in Jahren"
     },
     {
-      "id": "basis-wohnsituation",
-      "text": "Wie wohnen Sie?",
-      "typ": "single-choice",
-      "optionen": [
-        { "value": "miete", "label": "Mietwohnung" },
-        { "value": "eigentum", "label": "Eigentumswohnung/Haus" }
-      ],
-      "zielgruppenMapping": {
-        "miete": ["mieter"],
-        "eigentum": ["eigentuemer"]
-      }
+      "id": "basis-erwachsene-steuerlich",
+      "text": "Wie viele steuerlich relevante Erwachsene leben in Ihrem Haushalt?",
+      "typ": "number",
+      "einheit": "Personen",
+      "hinweis": "1 = allein, 2 = zusammen veranlagt mit Partner/in"
     },
     {
-      "id": "pendler-strecke",
-      "text": "Fahren Sie täglich mehr als 20 km zur Arbeit?",
-      "typ": "boolean",
-      "zielgruppenMapping": {
-        "true": ["pendler"],
-        "false": []
-      },
-      "kontextIds": ["mobilitaetsreform", "pendlerpauschale-abschaffung"]
+      "id": "basis-einkommen-angestellt",
+      "text": "Jährliches Bruttoeinkommen aus Anstellung oder Beamtenverhältnis",
+      "typ": "number",
+      "einheit": "EUR/Jahr",
+      "hinweis": "0 eingeben, wenn nicht zutreffend"
     },
     {
-      "id": "selbststaendig",
-      "text": "Sind Sie selbstständig oder Unternehmensinhaber?",
-      "typ": "boolean",
-      "zielgruppenMapping": {
-        "true": ["unternehmer"],
-        "false": []
-      },
-      "kontextIds": ["steuerreform-kmu"]
+      "id": "basis-einkommen-selbststaendig",
+      "text": "Jährliches Bruttoeinkommen aus Selbstständigkeit",
+      "typ": "number",
+      "einheit": "EUR/Jahr",
+      "hinweis": "0 eingeben, wenn nicht zutreffend"
+    },
+    {
+      "id": "basis-partner-einkommen",
+      "text": "Jährliches Bruttoeinkommen Ihres Partners / Ihrer Partnerin",
+      "typ": "number",
+      "einheit": "EUR/Jahr",
+      "hinweis": "0 eingeben, wenn allein steuerlich oder nicht zutreffend"
+    },
+    {
+      "id": "basis-kinder-anzahl",
+      "text": "Wie viele Kinder haben Sie?",
+      "typ": "number",
+      "einheit": "Anzahl",
+      "hinweis": "0 eingeben, wenn keine Kinder"
+    },
+    {
+      "id": "basis-kapitalertraege",
+      "text": "Jährliche Kapitalerträge (z. B. Zinsen, Dividenden)",
+      "typ": "number",
+      "einheit": "EUR/Jahr",
+      "hinweis": "0 eingeben, wenn keine"
+    },
+    {
+      "id": "basis-kirchensteuer",
+      "text": "Sind Sie kirchensteuerpflichtig?",
+      "typ": "number",
+      "einheit": "0/1",
+      "hinweis": "0 = nein, 1 = ja"
+    },
+    {
+      "id": "basis-steuerlast-gesamt",
+      "text": "Ihre jährliche Gesamtsteuerlast (ESt, Soli, AbgSt, KiSt)",
+      "typ": "number",
+      "einheit": "EUR/Jahr",
+      "hinweis": "0 eingeben, um automatisch zu schätzen"
     }
   ],
   "vorhaben": [
     {
-      "id": "mindestlohn-erhoehung",
-      "titel": "Mindestlohnerhöhung auf 14 €",
-      "beschreibung": "Anhebung des gesetzlichen Mindestlohns – wirkt direkt auf Einkommensschwache ohne Untervorhaben.",
+      "id": "soli-abschaffung",
+      "titel": "Abschaffung des Solidaritätszuschlags",
+      "beschreibung": "Vollständiger Wegfall des Solidaritätszuschlags (5,5 % auf die Einkommensteuer bzw. Abgeltungsteuer) für alle verbleibenden Zahler.",
       "metadata": {
-        "status": "entwurf",
-        "erstelltAm": "2026-01-15"
-      },
-      "zielgruppen": [
-        {
-          "zielgruppeId": "mieter",
-          "fragenIds": ["basis-wohnsituation"],
-          "rechenvorschrift": {
-            "variablen": {
-              "einkommen": {
-                "beschreibung": "Monatliches Nettoeinkommen in EUR",
-                "quelle": "nutzerprofil"
-              },
-              "miete": {
-                "beschreibung": "Monatliche Kaltmiete in EUR",
-                "quelle": "nutzerprofil"
-              }
-            },
-            "formeln": {
-              "kurz": "Math.min(200, einkommen * 0.02)",
-              "mittel": "Math.min(400, einkommen * 0.04)",
-              "lang": "Math.min(600, einkommen * 0.06)"
-            },
-            "einheit": "EUR/Jahr",
-            "erlaeuterung": "Geschätzte Entlastung durch höheres verfügbares Einkommen"
-          }
-        }
-      ]
-    },
-    {
-      "id": "mobilitaetsreform",
-      "titel": "Mobilitätsreform 2026",
-      "beschreibung": "Paket aus CO₂-Preiserhöhung und Pendlerpauschalen-Anpassung.",
-      "metadata": {
+        "quelle": "Modellhafte Abschätzung basierend auf Steuerrecht 2024/25",
         "status": "modelliert",
-        "erstelltAm": "2026-02-01"
+        "erstelltAm": "2026-08-15"
+      },
+      "staatsfinanzierung": {
+        "fiskalausfall_feld": "gesamt_fiskalausfall_mrd",
+        "richtung": "belastung"
       },
       "untervorhaben": [
         {
-          "id": "co2-preis-erhoehung",
-          "titel": "CO₂-Preis auf 55 €/t erhöhen",
-          "beschreibung": "Erhöhung des CO₂-Preises auf fossilen Kraftstoffen.",
+          "id": "soli-arbeit-abschaffung",
+          "titel": "Wegfall für Arbeitseinkommen",
+          "beschreibung": "Abschaffung des Soli auf Lohn- und Gehaltseinkommen für die verbleibenden Soli-pflichtigen (ca. oberes Einkommensdrittel).",
           "zielgruppen": [
             {
-              "zielgruppeId": "pendler",
-              "fragenIds": ["pendler-strecke"],
+              "zielgruppeId": "soli-pflichtig-arbeitnehmer",
+              "fragenIds": ["basis-einkommen-angestellt"],
               "rechenvorschrift": {
                 "variablen": {
-                  "pendelstrecke_km": {
-                    "beschreibung": "Tägliche Pendelstrecke in km (einfache Strecke)",
-                    "quelle": "nutzerprofil",
-                    "standardwert": 30
+                  "einkommen_angestellt": {
+                    "beschreibung": "Jährliches Bruttoeinkommen aus Anstellung in EUR",
+                    "quelle": "nutzerprofil"
                   },
-                  "arbeitstage": {
-                    "beschreibung": "Arbeitstage pro Jahr",
+                  "soli_freigrenze": {
+                    "beschreibung": "Freigrenze ab der Soli fällig wird (Einzelveranlagung)",
                     "quelle": "konstante",
-                    "standardwert": 220
+                    "standardwert": 73000
+                  },
+                  "soli_satz": {
+                    "beschreibung": "Solidaritätszuschlag-Satz auf die Einkommensteuer",
+                    "quelle": "konstante",
+                    "standardwert": 0.055
                   }
                 },
                 "formeln": {
-                  "kurz": "pendelstrecke_km * arbeitstage * 0.08 * 2",
-                  "mittel": "pendelstrecke_km * arbeitstage * 0.12 * 2",
-                  "lang": "pendelstrecke_km * arbeitstage * 0.15 * 2"
+                  "kurz": "einkommen_angestellt > soli_freigrenze ? Math.min((einkommen_angestellt - soli_freigrenze) * 0.026, 4000) : 0",
+                  "mittel": "einkommen_angestellt > soli_freigrenze ? Math.min((einkommen_angestellt - soli_freigrenze) * 0.028, 4500) : 0",
+                  "lang": "einkommen_angestellt > soli_freigrenze ? Math.min((einkommen_angestellt - soli_freigrenze) * 0.03, 5000) : 0"
                 },
                 "einheit": "EUR/Jahr",
-                "erlaeuterung": "Mehrkosten durch höheren CO₂-Preis auf Pendelstrecke"
+                "erlaeuterung": "Geschätzte jährliche Entlastung durch Wegfall des Soli auf Arbeitseinkommen (vereinfachtes Modell)"
+              }
+            },
+            {
+              "zielgruppeId": "soli-pflichtig-selbststaendig",
+              "fragenIds": ["basis-einkommen-selbststaendig"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "einkommen_selbststaendig": {
+                    "beschreibung": "Jährliches Bruttoeinkommen aus Selbstständigkeit in EUR",
+                    "quelle": "nutzerprofil"
+                  },
+                  "soli_freigrenze": {
+                    "beschreibung": "Freigrenze ab der Soli fällig wird",
+                    "quelle": "konstante",
+                    "standardwert": 73000
+                  }
+                },
+                "formeln": {
+                  "kurz": "einkommen_selbststaendig > soli_freigrenze ? Math.min((einkommen_selbststaendig - soli_freigrenze) * 0.03, 5500) : 0",
+                  "mittel": "einkommen_selbststaendig > soli_freigrenze ? Math.min((einkommen_selbststaendig - soli_freigrenze) * 0.032, 6000) : 0",
+                  "lang": "einkommen_selbststaendig > soli_freigrenze ? Math.min((einkommen_selbststaendig - soli_freigrenze) * 0.035, 6500) : 0"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Entlastung für Selbstständige (etwas höher wegen Gewerbesteuer-Effekten im Modell)"
               }
             }
           ]
         },
         {
-          "id": "pendlerpauschale-abschaffung",
-          "titel": "Pendlerpauschale abschaffen",
-          "beschreibung": "Wegfall der steuerlichen Pendlerpauschale ab 21. km.",
+          "id": "soli-kapital-abschaffung",
+          "titel": "Wegfall auf Kapitalerträge",
+          "beschreibung": "Abschaffung des Soli-Anteils auf Kapitalerträge (Abgeltungsteuer).",
           "zielgruppen": [
             {
-              "zielgruppeId": "pendler",
-              "fragenIds": ["pendler-strecke"],
+              "zielgruppeId": "kapitalanleger-soli",
+              "fragenIds": ["basis-kapitalertraege"],
               "rechenvorschrift": {
                 "variablen": {
-                  "pendelstrecke_km": {
-                    "beschreibung": "Tägliche Pendelstrecke in km (einfache Strecke)",
-                    "quelle": "nutzerprofil",
-                    "standardwert": 30
+                  "kapitalertraege": {
+                    "beschreibung": "Jährliche Kapitalerträge in EUR",
+                    "quelle": "nutzerprofil"
                   },
-                  "grenzsteuersatz": {
-                    "beschreibung": "Grenzsteuersatz in Dezimal (z. B. 0.35)",
-                    "quelle": "nutzerprofil",
-                    "standardwert": 0.35
-                  },
-                  "arbeitstage": {
-                    "beschreibung": "Arbeitstage pro Jahr",
+                  "abgeltungsteuer_satz": {
+                    "beschreibung": "Abgeltungsteuer-Satz",
                     "quelle": "konstante",
-                    "standardwert": 220
+                    "standardwert": 0.25
+                  },
+                  "soli_satz": {
+                    "beschreibung": "Soli-Satz auf Abgeltungsteuer",
+                    "quelle": "konstante",
+                    "standardwert": 0.055
                   }
                 },
                 "formeln": {
-                  "kurz": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2",
-                  "mittel": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2",
-                  "lang": "Math.max(0, pendelstrecke_km - 20) * arbeitstage * 0.3 * grenzsteuersatz * 2"
+                  "kurz": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0",
+                  "mittel": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0",
+                  "lang": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0"
                 },
                 "einheit": "EUR/Jahr",
-                "erlaeuterung": "Steuerliche Mehrbelastung durch Wegfall der Pendlerpauschale (negativer Wert = Belastung)"
+                "erlaeuterung": "Entlastung = entfallender Soli-Anteil auf Abgeltungsteuer"
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "steuerreform-kmu",
-      "titel": "Steuerreform für KMU",
-      "beschreibung": "Kombiniert direkte Unternehmer-Effekte mit Untervorhaben für Mieter/Eigentümer.",
-      "metadata": {
-        "status": "entwurf",
-        "erstelltAm": "2026-03-01"
-      },
-      "zielgruppen": [
-        {
-          "zielgruppeId": "unternehmer",
-          "fragenIds": ["selbststaendig"],
-          "rechenvorschrift": {
-            "variablen": {
-              "gewinn": {
-                "beschreibung": "Jährlicher Unternehmensgewinn in EUR",
-                "quelle": "nutzerprofil"
-              }
-            },
-            "formeln": {
-              "kurz": "gewinn * 0.01",
-              "mittel": "gewinn * 0.02",
-              "lang": "gewinn * 0.03"
-            },
-            "einheit": "EUR/Jahr",
-            "erlaeuterung": "Entlastung durch reduzierten Körperschaftsteuersatz"
-          }
         }
       ],
-      "untervorhaben": [
+      "zielgruppen": [
         {
-          "id": "wohnungsbaufoerderung",
-          "titel": "Förderung neuer Mietwohnungen",
-          "zielgruppen": [
-            {
-              "zielgruppeId": "mieter",
-              "fragenIds": ["basis-wohnsituation"],
-              "rechenvorschrift": {
-                "variablen": {
-                  "miete": {
-                    "beschreibung": "Monatliche Kaltmiete in EUR",
-                    "quelle": "nutzerprofil"
-                  }
-                },
-                "formeln": {
-                  "kurz": "0",
-                  "mittel": "miete * 12 * -0.02",
-                  "lang": "miete * 12 * -0.05"
-                },
-                "einheit": "EUR/Jahr",
-                "erlaeuterung": "Mietpreisdämpfung durch erhöhtes Angebot (negativ = Entlastung)"
-              }
+          "zielgruppeId": "nicht-betroffen",
+          "fragenIds": [
+            "basis-einkommen-angestellt",
+            "basis-einkommen-selbststaendig",
+            "basis-kapitalertraege"
+          ],
+          "rechenvorschrift": {
+            "variablen": {},
+            "formeln": {
+              "kurz": "0",
+              "mittel": "0",
+              "lang": "0"
             },
-            {
-              "zielgruppeId": "eigentuemer",
-              "fragenIds": ["basis-wohnsituation"],
-              "rechenvorschrift": {
-                "variablen": {
-                  "immobilienwert": {
-                    "beschreibung": "Geschätzter Immobilienwert in EUR",
-                    "quelle": "nutzerprofil"
-                  }
-                },
-                "formeln": {
-                  "kurz": "0",
-                  "mittel": "immobilienwert * -0.005",
-                  "lang": "immobilienwert * -0.01"
-                },
-                "einheit": "EUR",
-                "erlaeuterung": "Leichter Wertverlust durch erhöhtes Mietangebot"
-              }
-            }
-          ]
+            "einheit": "EUR/Jahr",
+            "erlaeuterung": "Keine Entlastung für nicht Soli-pflichtige Personen"
+          }
         }
       ]
     }
-  ]
+  ],
+  "gesellschaft": {
+    "anzahl_soli_pflichtige": 4500000,
+    "durchschnitt_entlastung_arbeit": 2400,
+    "anzahl_kapitalanleger_soli": 2800000,
+    "durchschnitt_entlastung_kapital": 180,
+    "gesamt_fiskalausfall_mrd": 11.2,
+    "steueraufkommen_gesamt_mrd": 900
+  }
 }

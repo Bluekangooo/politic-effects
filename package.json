@@ -9,7 +9,7 @@
     "build": "npm run build:lib && npm run build:web",
     "build:lib": "tsc",
     "build:web": "vite build --config web/vite.config.ts",
-    "build:pages": "vite build --config web/vite.config.ts --base /politic-effects/ && cp web/dist/index.html web/dist/404.html",
+    "build:pages": "vite build --config web/vite.config.ts --base /politic-effects/ && cp web/dist/index.html web/dist/404.html && rm -f web/dist/CNAME",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
     "validate": "tsx scripts/validate-examples.ts",
     "preview": "vite preview --config web/vite.config.ts"

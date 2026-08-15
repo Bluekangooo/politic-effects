@@ -1,0 +1,19 @@
+{
+  "name": "politic-effects",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wirkungsanalyse politischer Vorhaben auf Einzelne und Gesellschaft",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "validate": "tsx scripts/validate-examples.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

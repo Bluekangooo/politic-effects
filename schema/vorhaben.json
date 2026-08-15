@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://politic-effects.dev/schema/vorhaben.json",
+  "title": "Vorhaben",
+  "type": "object",
+  "required": ["id", "titel"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "titel": { "type": "string", "minLength": 1 },
+    "beschreibung": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "quelle": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["entwurf", "modelliert", "verifiziert"]
+        },
+        "erstelltAm": { "type": "string", "format": "date" },
+        "aktualisiertAm": { "type": "string", "format": "date" }
+      }
+    },
+    "zielgruppen": {
+      "type": "array",
+      "items": { "$ref": "zielgruppen-zuordnung.json" },
+      "minItems": 1
+    },
+    "untervorhaben": {
+      "type": "array",
+      "items": { "$ref": "untervorhaben.json" },
+      "minItems": 1
+    }
+  },
+  "anyOf": [
+    { "required": ["zielgruppen"] },
+    { "required": ["untervorhaben"] }
+  ]
+}

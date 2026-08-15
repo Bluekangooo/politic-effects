@@ -208,9 +208,14 @@ a:hover {
 }
 
 /* Fragebogen */
+.fragebogen-page {
+  min-width: 0;
+}
+
 .fragebogen-form {
   margin-top: 2rem;
-  max-width: 640px;
+  max-width: 720px;
+  width: 100%;
 }
 
 .fragen-block h2 {
@@ -227,12 +232,16 @@ a:hover {
   padding: 1.25rem 1.5rem;
   margin-bottom: 1rem;
   background: var(--surface);
+  min-width: 0;
+  overflow: hidden;
 }
 
-.frage-field legend {
+.frage-text {
   font-weight: 600;
-  padding: 0 0.25rem;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.85rem;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  line-height: 1.45;
 }
 
 .choice-row,
@@ -248,17 +257,26 @@ a:hover {
 
 .choice-chip {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.85rem;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
   background: var(--bg);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.choice-chip input {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
 }
 
 .choice-chip.wide {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .choice-chip:has(input:checked) {
@@ -269,6 +287,7 @@ a:hover {
 .number-input-wrap {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -278,12 +297,15 @@ a:hover {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  width: 180px;
+  width: min(100%, 200px);
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .input-suffix {
   color: var(--text-muted);
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
 .zielgruppen-preview {
@@ -291,11 +313,14 @@ a:hover {
   border-radius: var(--radius);
   padding: 1.25rem 1.5rem;
   margin: 1.5rem 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .zielgruppen-preview h2 {
   font-size: 0.9rem;
   margin: 0 0 0.75rem;
+  overflow-wrap: anywhere;
 }
 
 .zielgruppen-preview ul {

@@ -111,8 +111,8 @@ export function FragebogenPage() {
         <section className="fragen-block">
           <h2>Basisprofil</h2>
           {fragen.map((frage) => (
-            <fieldset key={frage.id} className="frage-field">
-              <legend>{frage.text}</legend>
+            <div key={frage.id} className="frage-field">
+              <p className="frage-text">{frage.text}</p>
               <FrageEingabe
                 frage={frage}
                 wert={alleAntworten[frage.id] as string | number | boolean | undefined}
@@ -121,7 +121,7 @@ export function FragebogenPage() {
                   if (wert !== "") setAntwort(frage.id, wert);
                 }}
               />
-            </fieldset>
+            </div>
           ))}
         </section>
 

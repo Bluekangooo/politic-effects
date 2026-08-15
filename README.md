@@ -84,8 +84,11 @@ Nach dem Merge auf `main` ist die App unter erreichbar:
 ### Einmalige Einrichtung im GitHub-Repository
 
 1. **Settings** → **Pages**
-2. Unter **Build and deployment** → **Source**: **GitHub Actions** wählen
-3. Nach dem ersten Push auf `main` läuft der Workflow `.github/workflows/deploy-pages.yml` automatisch
+2. Unter **Build and deployment** → **Source**: **Deploy from a branch**
+3. **Branch**: `gh-pages` / **/(root)** → **Save**
+4. Nach dem ersten Push auf `main` erstellt der Workflow den `gh-pages`-Branch automatisch (ca. 1–2 Minuten)
+
+Falls die Seite nach dem ersten Merge noch 404 zeigt: oben die Pages-Einstellung prüfen und unter **Actions** den Workflow **Deploy to GitHub Pages** erneut ausführen (**Re-run all jobs**).
 
 ### Auf dem iPhone
 

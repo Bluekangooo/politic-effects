@@ -60,16 +60,28 @@ Schemas liegen unter `schema/` und validieren Vorhaben-Daten:
 
 ```bash
 npm install
+npm run dev         # Webapp starten (http://localhost:5173)
 npm run typecheck   # TypeScript prüfen
 npm run validate    # Beispieldaten gegen Schema validieren
-npm run build       # Nach dist/ kompilieren
+npm run build       # Library + Webapp bauen
 ```
+
+### Demo-Flow: Solidaritätszuschlag
+
+1. **Startseite** → Fragebogen starten
+2. **Fragebogen**: Erwerbsstatus, Jahreseinkommen, Kapitalerträge beantworten
+3. **Dashboard**: Vorhaben/Untervorhaben hierarchisch auswählen, Effekte auf sich und Gesellschaft in drei Zeithorizonten sehen
+
+Testprofil „gut verdienender Angestellter“: Angestellt, 95.000 € Einkommen, 2.000 € Kapitalerträge.
 
 ## Projektstruktur
 
 ```
 src/types/          TypeScript-Domänentypen
+src/engine/         Berechnungs- und Zielgruppen-Logik
 schema/             JSON-Schema-Definitionen
-data/examples/      Beispiel-Vorhabenskatalog
+data/katalog.json   Aktiver Vorhabenskatalog (Soli-Demo)
+data/examples/      Weitere Beispieldaten
+web/                React-Webapp (Vite)
 scripts/            Validierungsskripte
 ```

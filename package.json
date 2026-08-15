@@ -5,15 +5,28 @@
   "description": "Wirkungsanalyse politischer Vorhaben auf Einzelne und Gesellschaft",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "validate": "tsx scripts/validate-examples.ts"
+    "dev": "vite --config web/vite.config.ts",
+    "build": "npm run build:lib && npm run build:web",
+    "build:lib": "tsc",
+    "build:web": "vite build --config web/vite.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
+    "validate": "tsx scripts/validate-examples.ts",
+    "preview": "vite preview --config web/vite.config.ts"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
   }
 }

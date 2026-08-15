@@ -51,10 +51,20 @@ export interface VorhabenMetadata {
   aktualisiertAm?: string;
 }
 
+/** Makrodaten für gesellschaftliche Effektberechnung */
+export interface GesellschaftDaten {
+  anzahl_soli_pflichtige: number;
+  durchschnitt_entlastung_arbeit: number;
+  anzahl_kapitalanleger_soli: number;
+  durchschnitt_entlastung_kapital: number;
+  gesamt_fiskalausfall_mrd: number;
+}
+
 /** Sammlung aller politischen Vorhaben */
 export interface VorhabenKatalog {
   version: string;
   zielgruppen: import("./zielgruppe.js").Zielgruppe[];
   fragen: import("./fragebogen.js").Frage[];
   vorhaben: Vorhaben[];
+  gesellschaft?: GesellschaftDaten;
 }

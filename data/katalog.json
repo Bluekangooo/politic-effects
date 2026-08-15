@@ -1,0 +1,188 @@
+{
+  "version": "0.1.0",
+  "zielgruppen": [
+    {
+      "id": "soli-pflichtig-arbeitnehmer",
+      "name": "Soli-pflichtige Arbeitnehmer",
+      "beschreibung": "Angestellte mit Bruttoeinkommen über der Soli-Freigrenze (~73.000 €)"
+    },
+    {
+      "id": "soli-pflichtig-selbststaendig",
+      "name": "Soli-pflichtige Selbstständige",
+      "beschreibung": "Selbstständige mit Einkommen über der Soli-Freigrenze"
+    },
+    {
+      "id": "kapitalanleger-soli",
+      "name": "Kapitalanleger mit Soli",
+      "beschreibung": "Personen mit Kapitalerträgen, auf die der Solidaritätszuschlag erhoben wird"
+    },
+    {
+      "id": "nicht-betroffen",
+      "name": "Nicht Soli-pflichtig",
+      "beschreibung": "Keine direkte Entlastung durch die Abschaffung"
+    }
+  ],
+  "fragen": [
+    {
+      "id": "basis-beschaeftigung",
+      "text": "Wie sind Sie hauptsächlich erwerbstätig?",
+      "typ": "single-choice",
+      "optionen": [
+        { "value": "angestellt", "label": "Angestellt / Beamte/r" },
+        { "value": "selbststaendig", "label": "Selbstständig" },
+        { "value": "nicht-erwerbstaetig", "label": "Nicht erwerbstätig" }
+      ],
+      "zielgruppenMapping": {
+        "angestellt": [],
+        "selbststaendig": [],
+        "nicht-erwerbstaetig": ["nicht-betroffen"]
+      }
+    },
+    {
+      "id": "basis-jahreseinkommen",
+      "text": "Wie hoch ist Ihr jährliches Bruttoeinkommen (ca.)?",
+      "typ": "number",
+      "zielgruppenMapping": {}
+    },
+    {
+      "id": "soli-kapitalertraege",
+      "text": "Wie hoch sind Ihre jährlichen Kapitalerträge (z. B. Zinsen, Dividenden)?",
+      "typ": "number",
+      "zielgruppenMapping": {},
+      "kontextIds": ["soli-kapital-abschaffung"]
+    }
+  ],
+  "vorhaben": [
+    {
+      "id": "soli-abschaffung",
+      "titel": "Abschaffung des Solidaritätszuschlags",
+      "beschreibung": "Vollständiger Wegfall des Solidaritätszuschlags (5,5 % auf die Einkommensteuer bzw. Abgeltungsteuer) für alle verbleibenden Zahler.",
+      "metadata": {
+        "quelle": "Modellhafte Abschätzung basierend auf Steuerrecht 2024/25",
+        "status": "modelliert",
+        "erstelltAm": "2026-08-15"
+      },
+      "untervorhaben": [
+        {
+          "id": "soli-arbeit-abschaffung",
+          "titel": "Wegfall für Arbeitseinkommen",
+          "beschreibung": "Abschaffung des Soli auf Lohn- und Gehaltseinkommen für die verbleibenden Soli-pflichtigen (ca. oberes Einkommensdrittel).",
+          "zielgruppen": [
+            {
+              "zielgruppeId": "soli-pflichtig-arbeitnehmer",
+              "fragenIds": ["basis-beschaeftigung", "basis-jahreseinkommen"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "jahreseinkommen": {
+                    "beschreibung": "Jährliches Bruttoeinkommen in EUR",
+                    "quelle": "nutzerprofil"
+                  },
+                  "soli_freigrenze": {
+                    "beschreibung": "Freigrenze ab der Soli fällig wird (Einzelveranlagung)",
+                    "quelle": "konstante",
+                    "standardwert": 73000
+                  },
+                  "soli_satz": {
+                    "beschreibung": "Solidaritätszuschlag-Satz auf die Einkommensteuer",
+                    "quelle": "konstante",
+                    "standardwert": 0.055
+                  }
+                },
+                "formeln": {
+                  "kurz": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.026, 4000) : 0",
+                  "mittel": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.028, 4500) : 0",
+                  "lang": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.03, 5000) : 0"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Geschätzte jährliche Entlastung durch Wegfall des Soli auf Arbeitseinkommen (vereinfachtes Modell)"
+              }
+            },
+            {
+              "zielgruppeId": "soli-pflichtig-selbststaendig",
+              "fragenIds": ["basis-beschaeftigung", "basis-jahreseinkommen"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "jahreseinkommen": {
+                    "beschreibung": "Jährliches Bruttoeinkommen in EUR",
+                    "quelle": "nutzerprofil"
+                  },
+                  "soli_freigrenze": {
+                    "beschreibung": "Freigrenze ab der Soli fällig wird",
+                    "quelle": "konstante",
+                    "standardwert": 73000
+                  }
+                },
+                "formeln": {
+                  "kurz": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.03, 5500) : 0",
+                  "mittel": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.032, 6000) : 0",
+                  "lang": "jahreseinkommen > soli_freigrenze ? Math.min((jahreseinkommen - soli_freigrenze) * 0.035, 6500) : 0"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Entlastung für Selbstständige (etwas höher wegen Gewerbesteuer-Effekten im Modell)"
+              }
+            }
+          ]
+        },
+        {
+          "id": "soli-kapital-abschaffung",
+          "titel": "Wegfall auf Kapitalerträge",
+          "beschreibung": "Abschaffung des Soli-Anteils auf Kapitalerträge (Abgeltungsteuer).",
+          "zielgruppen": [
+            {
+              "zielgruppeId": "kapitalanleger-soli",
+              "fragenIds": ["soli-kapitalertraege"],
+              "rechenvorschrift": {
+                "variablen": {
+                  "kapitalertraege": {
+                    "beschreibung": "Jährliche Kapitalerträge in EUR",
+                    "quelle": "nutzerprofil"
+                  },
+                  "abgeltungsteuer_satz": {
+                    "beschreibung": "Abgeltungsteuer-Satz",
+                    "quelle": "konstante",
+                    "standardwert": 0.25
+                  },
+                  "soli_satz": {
+                    "beschreibung": "Soli-Satz auf Abgeltungsteuer",
+                    "quelle": "konstante",
+                    "standardwert": 0.055
+                  }
+                },
+                "formeln": {
+                  "kurz": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0",
+                  "mittel": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0",
+                  "lang": "kapitalertraege > 1000 ? kapitalertraege * abgeltungsteuer_satz * soli_satz : 0"
+                },
+                "einheit": "EUR/Jahr",
+                "erlaeuterung": "Entlastung = entfallender Soli-Anteil auf Abgeltungsteuer"
+              }
+            }
+          ]
+        }
+      ],
+      "zielgruppen": [
+        {
+          "zielgruppeId": "nicht-betroffen",
+          "fragenIds": ["basis-beschaeftigung", "basis-jahreseinkommen"],
+          "rechenvorschrift": {
+            "variablen": {},
+            "formeln": {
+              "kurz": "0",
+              "mittel": "0",
+              "lang": "0"
+            },
+            "einheit": "EUR/Jahr",
+            "erlaeuterung": "Keine Entlastung für nicht Soli-pflichtige Personen"
+          }
+        }
+      ]
+    }
+  ],
+  "gesellschaft": {
+    "anzahl_soli_pflichtige": 4500000,
+    "durchschnitt_entlastung_arbeit": 2400,
+    "anzahl_kapitalanleger_soli": 2800000,
+    "durchschnitt_entlastung_kapital": 180,
+    "gesamt_fiskalausfall_mrd": 11.2
+  }
+}

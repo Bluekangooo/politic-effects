@@ -11,7 +11,6 @@ export type {
 export type {
   FrageTyp,
   Frage,
-  FrageOption,
   Nutzerprofil,
   NutzerZielgruppen,
 } from "./fragebogen.js";

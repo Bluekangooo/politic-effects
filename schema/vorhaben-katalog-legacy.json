@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://politic-effects.dev/schema/vorhaben-katalog.json",
-  "title": "VorhabenKatalog",
+  "$id": "https://politic-effects.dev/schema/vorhaben-katalog-legacy.json",
+  "title": "VorhabenKatalog (Legacy)",
   "type": "object",
   "required": ["version", "zielgruppen", "fragen", "vorhaben"],
   "additionalProperties": false,
@@ -17,23 +17,12 @@
     },
     "fragen": {
       "type": "array",
-      "items": { "$ref": "frage.json" }
+      "items": { "$ref": "frage-legacy.json" }
     },
     "vorhaben": {
       "type": "array",
       "items": { "$ref": "vorhaben.json" },
       "minItems": 1
-    },
-    "gesellschaft": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "anzahl_soli_pflichtige": { "type": "number" },
-        "durchschnitt_entlastung_arbeit": { "type": "number" },
-        "anzahl_kapitalanleger_soli": { "type": "number" },
-        "durchschnitt_entlastung_kapital": { "type": "number" },
-        "gesamt_fiskalausfall_mrd": { "type": "number" }
-      }
     }
   }
 }

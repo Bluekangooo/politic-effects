@@ -39,7 +39,12 @@ function ladeProfil(): Nutzerprofil {
   return { ...LEERES_PROFIL };
 }
 
-const PFLICHT_FRAGEN = ["basis-beschaeftigung", "basis-jahreseinkommen", "soli-kapitalertraege"];
+const PFLICHT_FRAGEN = [
+  "basis-alter",
+  "basis-einkommen-angestellt",
+  "basis-einkommen-selbststaendig",
+  "basis-kapitalertraege",
+];
 
 export function ProfilProvider({ children }: { children: ReactNode }) {
   const { katalog } = useKatalog();
@@ -57,7 +62,9 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
 
   const profilVollstaendig = useMemo(() => {
     const alle = { ...profil.basisAntworten, ...profil.vorhabenAntworten };
-    return PFLICHT_FRAGEN.every((id) => alle[id] !== undefined && alle[id] !== "");
+    return PFLICHT_FRAGEN.every(
+      (id) => typeof alle[id] === "number" && Number.isFinite(alle[id]),
+    );
   }, [profil]);
 
   const setAntwort = useCallback((frageId: string, wert: string | number | boolean) => {

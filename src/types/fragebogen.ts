@@ -1,31 +1,29 @@
 /**
  * Fragebogen-Typen für die dynamische Zuordnung zu Zielgruppen.
- * Fragen werden aus Vorhaben/Untervorhaben abgeleitet und erweitern
- * sich automatisch mit neuen politischen Vorhaben.
+ *
+ * Prinzip: Der Fragebogen fragt nur nach konkreten Zahlen (keine Klassen,
+ * keine Ja/Nein-Schwellen). Die Einordnung in Zielgruppen und Einkommens-
+ * klassen erfolgt nachträglich in der Engine anhand von Schwellenwerten.
  */
 
-export type FrageTyp = "boolean" | "number" | "single-choice" | "multi-choice";
+export type FrageTyp = "number";
 
-/** Eine einzelne Frage im Nutzerfragebogen */
+/** Eine einzelne Frage im Nutzerfragebogen – ausschließlich numerisch */
 export interface Frage {
   id: string;
   text: string;
   typ: FrageTyp;
-  /** Bei Auswahlfragen: mögliche Antworten */
-  optionen?: FrageOption[];
+  /** Anzeigeeinheit, z. B. "EUR/Jahr" oder "Jahre" */
+  einheit: string;
+  /** Optionaler Hinweis unter dem Eingabefeld */
+  hinweis?: string;
   /**
-   * Zuordnung von Antworten zu Zielgruppen-IDs.
-   * Schlüssel: Antwortwert ("true"/"false" bei boolean, Optionswert bei choice).
-   * Wert: Zielgruppen-IDs, die bei dieser Antwort zutreffen.
+   * @deprecated Klassifikation erfolgt in der Engine, nicht per Antwort-Mapping.
+   * Feld bleibt für Schema-Kompatibilität, sollte leer sein.
    */
-  zielgruppenMapping: Record<string, string[]>;
-  /** Optional: nur anzeigen wenn diese Vorhaben/Untervorhaben ausgewählt sind */
+  zielgruppenMapping?: Record<string, string[]>;
+  /** Optional: nur anzeigen wenn diese Vorhaben/Untervorhaben im Katalog sind */
   kontextIds?: string[];
-}
-
-export interface FrageOption {
-  value: string;
-  label: string;
 }
 
 /** Antworten eines Nutzers auf den Fragebogen */

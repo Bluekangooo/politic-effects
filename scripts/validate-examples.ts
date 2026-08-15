@@ -9,6 +9,7 @@ import type { VorhabenKatalog } from "../src/types/vorhaben.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const schemaDir = join(__dirname, "..", "schema");
 const examplesDir = join(__dirname, "..", "data", "examples");
+const katalogPath = join(__dirname, "..", "data", "katalog.json");
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 addFormats(ajv);
@@ -19,23 +20,29 @@ for (const file of readdirSync(schemaDir).filter((f) => f.endsWith(".json"))) {
 }
 
 const validateKatalog = ajv.getSchema("https://politic-effects.dev/schema/vorhaben-katalog.json");
-if (!validateKatalog) {
-  console.error("Schema vorhaben-katalog.json nicht geladen.");
+const validateLegacy = ajv.getSchema(
+  "https://politic-effects.dev/schema/vorhaben-katalog-legacy.json",
+);
+
+if (!validateKatalog || !validateLegacy) {
+  console.error("Katalog-Schemas nicht geladen.");
   process.exit(1);
 }
 
 let hasErrors = false;
 
-for (const file of readdirSync(examplesDir).filter((f) => f.endsWith(".json"))) {
-  const path = join(examplesDir, file);
+function validiere(
+  label: string,
+  path: string,
+  validate: typeof validateKatalog,
+): void {
   const data = JSON.parse(readFileSync(path, "utf-8")) as VorhabenKatalog;
-
-  console.log(`\nValidiere ${file} …`);
+  console.log(`\nValidiere ${label} …`);
 
   let fileOk = true;
 
-  if (!validateKatalog(data)) {
-    console.error("  JSON-Schema-Fehler:", validateKatalog.errors);
+  if (!validate!(data)) {
+    console.error("  JSON-Schema-Fehler:", validate!.errors);
     fileOk = false;
   }
 
@@ -53,8 +60,14 @@ for (const file of readdirSync(examplesDir).filter((f) => f.endsWith(".json"))) 
   }
 }
 
+validiere("katalog.json", katalogPath, validateKatalog);
+
+for (const file of readdirSync(examplesDir).filter((f) => f.endsWith(".json"))) {
+  validiere(`examples/${file}`, join(examplesDir, file), validateLegacy);
+}
+
 if (hasErrors) {
   process.exit(1);
 }
 
-console.log("\nAlle Beispiele gültig.");
+console.log("\nAlle Kataloge gültig.");

@@ -1,20 +1,30 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://politic-effects.dev/schema/frage.json",
-  "title": "Frage",
+  "$id": "https://politic-effects.dev/schema/frage-legacy.json",
+  "title": "Frage (Legacy)",
   "type": "object",
-  "required": ["id", "text", "typ", "einheit"],
+  "required": ["id", "text", "typ", "zielgruppenMapping"],
   "additionalProperties": false,
   "properties": {
     "id": { "type": "string", "minLength": 1 },
     "text": { "type": "string", "minLength": 1 },
     "typ": {
       "type": "string",
-      "const": "number",
-      "description": "Fragebogen fragt nur nach konkreten Zahlen"
+      "enum": ["boolean", "number", "single-choice", "multi-choice"]
     },
-    "einheit": { "type": "string", "minLength": 1 },
-    "hinweis": { "type": "string" },
+    "optionen": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["value", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "value": { "type": "string" },
+          "label": { "type": "string", "minLength": 1 }
+        }
+      },
+      "minItems": 1
+    },
     "zielgruppenMapping": {
       "type": "object",
       "additionalProperties": {

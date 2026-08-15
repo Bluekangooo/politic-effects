@@ -53,8 +53,10 @@ export function loeseVariablen(
 /** Mappt Rechenvorschrift-Variablennamen auf Fragebogen-Felder */
 function mapProfilKey(varName: string): string {
   const mapping: Record<string, string> = {
-    jahreseinkommen: "basis-jahreseinkommen",
-    kapitalertraege: "soli-kapitalertraege",
+    einkommen_angestellt: "basis-einkommen-angestellt",
+    einkommen_selbststaendig: "basis-einkommen-selbststaendig",
+    kapitalertraege: "basis-kapitalertraege",
+    alter: "basis-alter",
   };
   return mapping[varName] ?? varName;
 }

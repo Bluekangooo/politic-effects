@@ -70,10 +70,12 @@ npm run build:pages # Build für GitHub Pages (lokal testen)
 ### Demo-Flow: Solidaritätszuschlag
 
 1. **Startseite** → Fragebogen starten
-2. **Fragebogen**: Erwerbsstatus, Jahreseinkommen, Kapitalerträge beantworten
+2. **Fragebogen**: konkrete Zahlen (Alter, Einkommen je Quelle, Kapitalerträge) – keine Klassen
 3. **Dashboard**: Vorhaben/Untervorhaben hierarchisch auswählen, Effekte auf sich und Gesellschaft in drei Zeithorizonten sehen
 
-Testprofil „gut verdienender Angestellter“: Angestellt, 95.000 € Einkommen, 2.000 € Kapitalerträge.
+**Fragebogen-Prinzip:** Nur numerische Eingaben. Zielgruppen und Einkommensklassen werden in der Engine aus Schwellenwerten abgeleitet.
+
+Testprofil „gut verdienender Angestellter“: Alter 42 · 95.000 € Anstellung · 0 € Selbstständigkeit · 2.000 € Kapitalerträge.
 
 ## Live-Demo (GitHub Pages)
 

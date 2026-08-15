@@ -10,18 +10,8 @@ import {
 } from "@engine/index";
 import { useKatalog } from "../context/KatalogContext";
 import { useProfil } from "../context/ProfilContext";
-
-function formatEuro(wert: number): string {
-  return new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(wert);
-}
-
-function formatZahl(wert: number): string {
-  return new Intl.NumberFormat("de-DE").format(Math.round(wert));
-}
+import { Geldbetrag, formatPersonenanzahl } from "../components/Geldbetrag";
+import { formatEuroGesellschaft, formatEuroVoll } from "../lib/format";
 
 function VorhabenBaum({
   vorhaben,
@@ -90,24 +80,30 @@ function EffektTabelle({
 
   return (
     <div className="effekt-karte">
-      <h3>{titel}</h3>
+      <h3 className="effekt-titel">{titel}</h3>
       <div className="effekt-grid">
         <div className="effekt-spalte persoenlich">
           <h4>Auf mich</h4>
-          <p className={`effekt-wert ${(pers?.wert ?? 0) > 0 ? "positiv" : "neutral"}`}>
-            {pers ? formatEuro(pers.wert) : "–"}
-          </p>
+          {pers ? (
+            <Geldbetrag
+              wert={pers.wert}
+              modus="persoenlich"
+              className={(pers.wert ?? 0) > 0 ? "positiv" : "neutral"}
+            />
+          ) : (
+            <p className="effekt-wert neutral">–</p>
+          )}
           <p className="effekt-meta">{pers?.einheit ?? "EUR/Jahr"} · {zhLabel}</p>
         </div>
         {ges && (
           <div className="effekt-spalte gesellschaft">
             <h4>Gesellschaft</h4>
-            <p className="effekt-wert positiv">{formatEuro(ges.entlastungGesamt)}</p>
+            <Geldbetrag wert={ges.entlastungGesamt} modus="gesellschaft" className="positiv" />
             <p className="effekt-meta">
-              Gesamtentlastung · {formatZahl(ges.betroffene)} Betroffene
+              Gesamtentlastung · {formatPersonenanzahl(ges.betroffene)} Betroffene
             </p>
-            <p className="effekt-meta fiskal">
-              Fiskalausfall: {formatEuro(ges.fiskalausfall)}
+            <p className="effekt-meta fiskal" title={formatEuroVoll(ges.fiskalausfall)}>
+              Fiskalausfall: {formatEuroGesellschaft(ges.fiskalausfall)}
             </p>
           </div>
         )}
@@ -218,19 +214,25 @@ export function DashboardPage() {
             <div className="effekt-grid">
               <div className="effekt-spalte persoenlich">
                 <h4>Auf mich</h4>
-                <p className={`effekt-wert gross ${persoenlichGesamt > 0 ? "positiv" : "neutral"}`}>
-                  {formatEuro(persoenlichGesamt)}
-                </p>
+                <Geldbetrag
+                  wert={persoenlichGesamt}
+                  modus="persoenlich"
+                  gross
+                  className={persoenlichGesamt > 0 ? "positiv" : "neutral"}
+                />
                 <p className="effekt-meta">jährliche Entlastung (geschätzt)</p>
               </div>
               {gesellschaftGesamt && (
                 <div className="effekt-spalte gesellschaft">
                   <h4>Gesellschaft</h4>
-                  <p className="effekt-wert gross positiv">
-                    {formatEuro(gesellschaftGesamt.entlastungGesamt)}
-                  </p>
+                  <Geldbetrag
+                    wert={gesellschaftGesamt.entlastungGesamt}
+                    modus="gesellschaft"
+                    gross
+                    className="positiv"
+                  />
                   <p className="effekt-meta">
-                    {formatZahl(gesellschaftGesamt.betroffene)} Betroffene
+                    {formatPersonenanzahl(gesellschaftGesamt.betroffene)} Betroffene
                   </p>
                 </div>
               )}

@@ -64,6 +64,7 @@ npm run dev         # Webapp starten (http://localhost:5173)
 npm run typecheck   # TypeScript prüfen
 npm run validate    # Beispieldaten gegen Schema validieren
 npm run build       # Library + Webapp bauen
+npm run build:pages # Build für GitHub Pages (lokal testen)
 ```
 
 ### Demo-Flow: Solidaritätszuschlag
@@ -73,6 +74,24 @@ npm run build       # Library + Webapp bauen
 3. **Dashboard**: Vorhaben/Untervorhaben hierarchisch auswählen, Effekte auf sich und Gesellschaft in drei Zeithorizonten sehen
 
 Testprofil „gut verdienender Angestellter“: Angestellt, 95.000 € Einkommen, 2.000 € Kapitalerträge.
+
+## Live-Demo (GitHub Pages)
+
+Nach dem Merge auf `main` ist die App unter erreichbar:
+
+**https://bluekangooo.github.io/politic-effects/**
+
+### Einmalige Einrichtung im GitHub-Repository
+
+1. **Settings** → **Pages**
+2. Unter **Build and deployment** → **Source**: **GitHub Actions** wählen
+3. Nach dem ersten Push auf `main` läuft der Workflow `.github/workflows/deploy-pages.yml` automatisch
+
+### Auf dem iPhone
+
+1. URL in **Safari** öffnen
+2. **Teilen** (Teilen-Symbol) → **Zum Home-Bildschirm**
+3. Die App startet danach wie eine normale App – ohne Terminal
 
 ## Projektstruktur
 
